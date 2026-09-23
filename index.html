@@ -642,22 +642,70 @@
   <script>
     const buttons = [...document.querySelectorAll(".nav button")];
     const sections = [...document.querySelectorAll(".section")];
+    const stickyBar = document.querySelector(".sticky-bar");
+
+    function setActive(id) {
+      buttons.forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.target === id);
+      });
+    }
+
+    function updateActiveFromScroll() {
+      if (!sections.length) return;
+
+      // Start the active zone just below the sticky navigation.
+      const navBottom = stickyBar
+        ? stickyBar.getBoundingClientRect().bottom
+        : 0;
+
+      const threshold = navBottom + 24;
+
+      // Pick the last section whose top has already reached the active zone.
+      // This remains deterministic during smooth scrolling on mobile.
+      let current = sections[0];
+      for (const section of sections) {
+        if (section.getBoundingClientRect().top <= threshold) {
+          current = section;
+        } else {
+          break;
+        }
+      }
+
+      setActive(current.id);
+    }
+
+    let ticking = false;
+    window.addEventListener("scroll", () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        updateActiveFromScroll();
+        ticking = false;
+      });
+    }, {passive:true});
+
+    window.addEventListener("resize", updateActiveFromScroll);
 
     buttons.forEach(btn => {
       btn.addEventListener("click", () => {
-        document.getElementById(btn.dataset.target)?.scrollIntoView({behavior:"smooth", block:"start"});
+        const target = document.getElementById(btn.dataset.target);
+        if (!target) return;
+
+        // Select immediately so the tapped button is visibly active.
+        setActive(target.id);
+
+        target.scrollIntoView({
+          behavior: "smooth",
+          block: "start"
+        });
+
+        // Re-check after the smooth-scroll animation has settled.
+        window.setTimeout(updateActiveFromScroll, 450);
+        window.setTimeout(updateActiveFromScroll, 800);
       });
     });
 
-    const observer = new IntersectionObserver((entries) => {
-      const visible = entries
-        .filter(e => e.isIntersecting)
-        .sort((a,b) => b.intersectionRatio - a.intersectionRatio)[0];
-      if (!visible) return;
-      buttons.forEach(btn => btn.classList.toggle("active", btn.dataset.target === visible.target.id));
-    }, {rootMargin:"-20% 0px -60% 0px", threshold:[0.1,0.25,0.5]});
-
-    sections.forEach(section => observer.observe(section));
+    updateActiveFromScroll();
   </script>
 </body>
 </html>
