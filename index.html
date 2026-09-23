@@ -239,13 +239,16 @@
 
     .item{
       position:relative;
-      padding:16px 15px 15px;
+      padding:19px 18px 19px;
       background:rgba(252,250,246,.82);
       border:1px solid var(--soft);
       border-radius:17px;
       box-shadow:0 5px 20px rgba(28,25,19,.035);
       overflow:hidden;
       align-self:start;
+      display:flex;
+      flex-direction:column;
+      gap:15px;
     }
 
     .item-top{
@@ -275,7 +278,7 @@
       display:inline-flex;
       align-items:center;
       gap:6px;
-      margin-top:7px;
+      margin:0;
       color:#697364;
       font-size:.67rem;
       font-weight:700;
@@ -286,10 +289,12 @@
     .veg svg{width:16px;height:16px;display:block}
 
     .desc{
-      margin:9px 0 0;
+      margin:0;
       color:#5a5853;
       font-size:.79rem;
-      line-height:1.32;
+      line-height:1.42;
+      display:grid;
+      gap:4px;
     }
 
     .desc span{
@@ -432,8 +437,7 @@
 
   
     .item .dish-photo{
-      margin-top:15px;
-      margin-bottom:0;
+      margin:0;
     }
 
     .item .desc{
